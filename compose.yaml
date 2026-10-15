@@ -1,0 +1,27 @@
+services:
+  search:
+    build: .
+    image: n3-search:cpu
+    restart: unless-stopped
+    init: true
+    ports:
+      - "127.0.0.1:${N3_HTTP_PORT:-8503}:8501"
+    environment:
+      N3_IMAGE_BACKEND: torch_cpu
+    volumes:
+      - type: bind
+        source: ${N3_ASSETS_DIR:?Set N3_ASSETS_DIR to the prepared asset directory}
+        target: /assets
+        read_only: true
+    mem_limit: 6500m
+    cpus: 2
+    pids_limit: 256
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

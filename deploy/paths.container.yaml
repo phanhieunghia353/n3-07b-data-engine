@@ -1,0 +1,5 @@
+data_root: /assets/data
+images_dir: images/100k
+meta_dir: /assets/meta
+index_root: /assets/indexes
+clip_weights_dir: /assets/weights

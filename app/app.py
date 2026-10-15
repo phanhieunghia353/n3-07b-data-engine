@@ -11,6 +11,7 @@ Run: streamlit run app/app.py
 from __future__ import annotations
 
 import io
+import os
 import sys
 import time
 from copy import copy
@@ -105,7 +106,7 @@ def run_search(index_id: str, prompts: list[str] | None, image: Image.Image | No
     report(0, "1/4 · Đang chuẩn bị bộ tìm kiếm…")
     idx = get_index(index_id)
     clip = (get_clip(idx.meta["model_id"]) if prompts else
-            get_image_clip(idx.meta["model_id"], idx.meta["backend"]))
+            get_image_clip(idx.meta["model_id"], os.environ.get("N3_IMAGE_BACKEND") or idx.meta["backend"]))
     need_full = any(filters.values())
     top = None if need_full else n
     idx.check_model(clip.model_id)

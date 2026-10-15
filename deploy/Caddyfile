@@ -1,0 +1,6 @@
+{$N3_PUBLIC_HOST} {
+    request_body {
+        max_size 16MB
+    }
+    reverse_proxy search:8501
+}

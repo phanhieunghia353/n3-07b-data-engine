@@ -5,6 +5,7 @@ from types import SimpleNamespace
 import faiss
 import numpy as np
 import pandas as pd
+import pytest
 import streamlit as st
 from PIL import Image
 from streamlit.testing.v1 import AppTest
@@ -15,7 +16,12 @@ from src.search import backends as search_backends
 from src.search.search import Index
 
 
-def test_search_similar_history_and_image_tab(tmp_path, monkeypatch):
+@pytest.mark.parametrize('cpu_override', [False, True])
+def test_search_similar_history_and_image_tab(tmp_path, monkeypatch, cpu_override):
+    if cpu_override:
+        monkeypatch.setenv('N3_IMAGE_BACKEND', 'torch_cpu')
+    else:
+        monkeypatch.delenv('N3_IMAGE_BACKEND', raising=False)
     # Synthetic images keep the test independent of BDD100K and model weights.
     meta_dir = tmp_path / "meta"
     index_root = tmp_path / "indexes"
@@ -97,7 +103,7 @@ def test_search_similar_history_and_image_tab(tmp_path, monkeypatch):
     assert related["query"] == "image:" + first_id
     assert first_id not in set(related["rows"].image_id)
     assert len(app.session_state["search_history_txt"]) == 1
-    assert backends == ["openvino_gpu"]
+    assert backends == ([] if cpu_override else ["openvino_gpu"])
     assert encoders[0].backend == "torch_cpu"  # The cached base encoder remains unmodified.
     app.button(key="search_back_txt").click().run()
     assert not app.exception
@@ -144,7 +150,7 @@ def test_search_similar_history_and_image_tab(tmp_path, monkeypatch):
     app.button(key="go_txt").click().run()
     assert not app.exception
     assert len(encoders) == 1
-    assert backends == ["openvino_gpu"]
+    assert backends == ([] if cpu_override else ["openvino_gpu"])
 
     assert [tab.label for tab in app.tabs] == ["Tìm bằng câu", "Tìm bằng ảnh", "So sánh"]
     before_compare = app.session_state["search_txt"]["rows"].copy()

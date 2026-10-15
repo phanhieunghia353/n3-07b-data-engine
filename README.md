@@ -63,6 +63,16 @@ Runtime mặc định dùng PyTorch CPU. Nếu chỉ mục ghi backend OpenVINO 
 python -m pip install -r requirements-openvino.txt
 ```
 
+Để chạy trên máy chủ CPU mà không thử khởi tạo OpenVINO, đặt biến môi trường
+`N3_IMAGE_BACKEND=torch_cpu`. Metadata và vector của chỉ mục vẫn được giữ nguyên.
+
+## Chạy bằng Docker và Google Cloud
+
+Docker sử dụng CPU, chạy bằng user không phải root và đọc gói tài nguyên riêng ở chế độ read-only.
+Xem [hướng dẫn triển khai](deploy/google-cloud/README.md) để chuẩn bị pack có SHA256,
+kiểm tra container cục bộ, triển khai Compute Engine và mở HTTPS sau khi kiểm tra nội bộ.
+Ảnh, weights, tokenizer, cấu hình máy và file `.env` vẫn nằm ngoài Git và Docker build context.
+
 ## Sử dụng
 
 - **Tìm bằng câu:** nhập tối đa 5 câu tiếng Anh, mỗi dòng một câu.

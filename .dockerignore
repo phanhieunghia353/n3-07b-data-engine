@@ -1,0 +1,22 @@
+# Only runtime source enters the build context. Local assets and reports never do.
+**
+!Dockerfile
+!.dockerignore
+!requirements.txt
+!app/
+!app/*.py
+!app/*.html
+!src/
+!src/**/
+!src/**/*.py
+!configs/
+!configs/clip_models.yaml
+!configs/tiling.yaml
+!.streamlit/
+!.streamlit/config.toml
+!tools/
+!tools/check_assets.py
+!deploy/
+!deploy/entrypoint.py
+!deploy/paths.container.yaml
+**/__pycache__/
