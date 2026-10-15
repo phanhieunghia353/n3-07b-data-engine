@@ -66,6 +66,12 @@ python -m pip install -r requirements-openvino.txt
 Để chạy trên máy chủ CPU mà không thử khởi tạo OpenVINO, đặt biến môi trường
 `N3_IMAGE_BACKEND=torch_cpu`. Metadata và vector của chỉ mục vẫn được giữ nguyên.
 
+## Demo online từ máy cá nhân
+
+Xem [hướng dẫn Quick Tunnel](deploy/quick-tunnel.md) để tạo link HTTPS miễn phí từ máy cá nhân,
+không cần đăng ký cloud hoặc Docker. Có nút bật/tắt demo; máy cần luôn bật và có kết nối mạng.
+Link có thể chia sẻ trong thời gian tiến trình tunnel đang chạy và sẽ đổi khi tạo tunnel mới.
+
 ## Chạy bằng Docker và Google Cloud
 
 Docker sử dụng CPU, chạy bằng user không phải root và đọc gói tài nguyên riêng ở chế độ read-only.

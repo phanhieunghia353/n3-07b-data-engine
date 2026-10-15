@@ -1,4 +1,4 @@
-# Offline demo: no telemetry, listen on this laptop only (BDD100K images must not be served outside).
+# Default local launch: no telemetry, bind to this machine. Deployment scripts configure their own listener.
 [browser]
 gatherUsageStats = false
 

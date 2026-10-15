@@ -33,6 +33,7 @@
 !/app/image_preview.html
 !/app/search_feedback.html
 !/chay_app.bat
+!/chay_demo_online.bat
 !/compose.yaml
 !/configs/clip_models.yaml
 !/configs/paths.example.yaml
@@ -43,6 +44,9 @@
 !/deploy/google-cloud/README.md
 !/deploy/google-cloud/install-docker.sh
 !/deploy/paths.container.yaml
+!/deploy/quick-tunnel.md
+!/deploy/quick_tunnel.py
+!/dung_demo_online.bat
 !/public-files.txt
 !/pyproject.toml
 !/requirements-dev.txt
@@ -59,6 +63,7 @@
 !/tests/runtime/test_app_search.py
 !/tests/runtime/test_asset_transfer.py
 !/tests/runtime/test_encode_cache.py
+!/tests/runtime/test_quick_tunnel.py
 !/tests/runtime/test_runtime_package.py
 !/tests/runtime/test_search.py
 !/tests/runtime/test_tiling.py
