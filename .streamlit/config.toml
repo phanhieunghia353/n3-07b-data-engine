@@ -1,0 +1,7 @@
+# Offline demo: no telemetry, listen on this laptop only (BDD100K images must not be served outside).
+[browser]
+gatherUsageStats = false
+
+[server]
+address = "localhost"
+headless = true

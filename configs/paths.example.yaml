@@ -1,0 +1,9 @@
+# Copy to paths.yaml. Relative paths resolve against the repository root.
+# Keep all assets local; these folders are not part of the public repository.
+data_root: local-assets
+meta_dir: local-assets/meta
+index_root: local-assets/indexes
+clip_weights_dir: local-assets/weights
+
+# Optional parquet with image_id and uncertainty columns.
+uncertainty_file: null

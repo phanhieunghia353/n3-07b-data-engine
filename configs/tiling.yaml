@@ -1,0 +1,16 @@
+# TILING_CONFIG. tile_idx 0 is always the whole image (when include_whole).
+# Tile boxes are computed by src/search/tiling.py from these parameters; all BDD
+# images are 1280x720 so one box set per tiling.
+tilings:
+  whole:
+    include_whole: true
+    grid_cols: 0
+    grid_rows: 0
+    overlap: 0.0
+    n_tiles: 1
+  t3x2o20:
+    include_whole: true
+    grid_cols: 3
+    grid_rows: 2
+    overlap: 0.2
+    n_tiles: 7

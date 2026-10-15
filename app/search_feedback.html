@@ -1,0 +1,96 @@
+<style>
+#n3-search-feedback {
+  position: fixed; bottom: 24px; right: 24px; z-index: 10000;
+  width: min(380px, calc(100vw - 48px)); padding: 16px 18px;
+  border: 1px solid var(--n3-line, #777); border-radius: 10px; background: var(--n3-panel, #151820);
+  color: var(--n3-text, #fff); font: 500 15px system-ui, sans-serif; box-shadow: 0 8px 30px var(--n3-shadow, #0008);
+}
+#n3-search-feedback[hidden] { display: none; }
+#n3-search-feedback .track { height: 4px; margin-top: 12px; overflow: hidden; background: var(--n3-line, #ffffff25); border-radius: 4px; }
+#n3-search-feedback .track::after {
+  content: ''; display: block; width: 35%; height: 100%; background: var(--n3-accent, #9ac0ff);
+  animation: n3-search-wait 1.2s ease-in-out infinite alternate;
+}
+@keyframes n3-search-wait { from { transform: translateX(-100%); } to { transform: translateX(285%); } }
+@media (prefers-reduced-motion: reduce) { #n3-search-feedback .track::after { animation: none; width: 100%; } }
+button.n3-processing { pointer-events: none; opacity: .55; cursor: wait; }
+</style>
+<script>
+(() => {
+  // Preserve the click guard across Streamlit reruns until this request's finished marker arrives.
+  if (window.__n3SearchFeedback) return;
+  const selector = '[class*="st-key-go_txt"] button, [class*="st-key-go_img"] button, '
+                 + '[class*="st-key-go_cmp"] button, [class*="st-key-timing_go"] button, '
+                 + '[class*="st-key-like_txt_"] button, [class*="st-key-like_img_"] button, '
+                 + '[class*="st-key-search_back_"] button, [class*="st-key-action_"] button';
+  const banner = document.createElement('div');
+  banner.id = 'n3-search-feedback';
+  banner.hidden = true;
+  banner.setAttribute('role', 'status');
+  banner.setAttribute('aria-live', 'polite');
+  const message = document.createElement('span');
+  message.textContent = 'Đang xử lý… Vui lòng chờ.';
+  banner.append(message);
+  const track = document.createElement('div');
+  track.className = 'track';
+  track.setAttribute('aria-hidden', 'true');
+  banner.append(track);
+  document.body.append(banner);
+  let busy = false;
+  let submittedGeneration = -1;
+  const locked = new Set();
+  function lockButtons() {
+    document.querySelectorAll(selector).forEach(button => {
+      locked.add(button);
+      button.classList.add('n3-processing');
+      button.setAttribute('aria-busy', 'true');
+    });
+  }
+  function begin(button) {
+    if (busy) return;
+    submittedGeneration = Number(document.querySelector('#n3-search-finished')?.dataset.generation ?? -1);
+    busy = true;
+    const label = button?.textContent || '';
+    message.textContent = label.includes('So sánh') ? 'Đang so sánh hai cấu hình…'
+      : label.includes('Quay lại') ? 'Đang khôi phục kết quả…'
+      : 'Đang xử lý… Vui lòng chờ.';
+    banner.hidden = false;
+    // Let React dispatch the first click before disabling its button.
+    queueMicrotask(lockButtons);
+  }
+  function finish() {
+    busy = false;
+    banner.hidden = true;
+    for (const button of locked) {
+      if (button.isConnected) {
+        button.classList.remove('n3-processing');
+        button.removeAttribute('aria-busy');
+      }
+    }
+    locked.clear();
+    document.querySelectorAll(selector).forEach(button => {
+      button.classList.remove('n3-processing');
+      button.removeAttribute('aria-busy');
+    });
+  }
+  document.addEventListener('click', event => {
+    const button = event.target instanceof Element ? event.target.closest('button') : null;
+    if (!button?.matches(selector)) return;
+    if (busy) { event.preventDefault(); event.stopImmediatePropagation(); return; }
+    begin(button);
+  }, true);
+  const observer = new MutationObserver(() => {
+    const active = document.querySelector('#n3-search-active');
+    const finished = document.querySelector('#n3-search-finished');
+    const done = Number(finished?.dataset.generation ?? -1);
+    if (!busy && active?.dataset.busy === 'true' && Number(active.dataset.generation) > done) begin();
+    if (!busy) return;
+    if (active?.dataset.busy === 'true' && active.dataset.message) message.textContent = active.dataset.message;
+    if (done > submittedGeneration || document.querySelector('[data-testid="stException"]')) finish();
+    else lockButtons();
+  });
+  observer.observe(document.querySelector('[data-testid="stAppViewContainer"]') || document.body,
+                   { childList: true, subtree: true });
+  window.__n3SearchFeedback = { observer };
+})();
+</script>

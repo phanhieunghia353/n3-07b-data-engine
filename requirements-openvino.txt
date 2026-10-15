@@ -1,0 +1,2 @@
+# Optional Intel image-encoder acceleration; the standard runtime works on CPU.
+openvino==2026.4.0

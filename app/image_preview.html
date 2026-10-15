@@ -1,0 +1,164 @@
+<style>
+[class*="st-key-preview_image_"] [data-testid="stElementToolbar"] { display: none; }
+[class*="st-key-preview_image_"] [data-testid="stImage"] img { cursor: zoom-in; }
+[class*="st-key-preview_image_"] [data-testid="stImage"] img:focus-visible {
+  outline: 3px solid var(--n3-accent, #9ac0ff); outline-offset: 3px;
+}
+#n3-image-preview {
+  position: fixed; inset: auto; margin: 0; padding: 0; overflow: hidden;
+  border: 1px solid var(--n3-line, #7e838c); border-radius: 10px; background: #0a0c10;
+  box-shadow: 0 12px 48px var(--n3-shadow, #0009); max-width: none; max-height: none;
+}
+#n3-image-preview img { display: block; width: 100%; height: 100%; object-fit: contain; cursor: zoom-out; }
+#n3-image-preview button, #n3-image-fullscreen button {
+  position: absolute; top: 10px; right: 10px; min-height: 44px;
+  padding: 0 16px; border: 1px solid var(--n3-line, #ffffff80); border-radius: 8px;
+  background: var(--n3-panel, #111318); color: var(--n3-text, white); font: 600 14px system-ui, sans-serif;
+  cursor: pointer; z-index: 1;
+}
+#n3-image-preview button:hover, #n3-image-fullscreen button:hover { background: var(--n3-soft, #303642); }
+#n3-image-preview button:focus-visible, #n3-image-fullscreen button:focus-visible {
+  outline: 3px solid var(--n3-accent, #9ac0ff); outline-offset: 2px;
+}
+#n3-image-fullscreen {
+  position: fixed; inset: 0; width: 100vw; height: 100dvh;
+  max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+  background: #080a0e; overflow: hidden;
+}
+#n3-image-fullscreen::backdrop { background: #080a0e; }
+#n3-image-fullscreen img { display: block; width: 100%; height: 100%; object-fit: contain; }
+</style>
+<script>
+(() => {
+  // Viewing is entirely local: reuse Streamlit's loaded media URL, never rerun Python.
+  window.__n3ImagePreview?.dispose();
+  const selector = '[class*="st-key-preview_image_"] [data-testid="stImage"] img';
+  const controller = new AbortController();
+  const options = { signal: controller.signal };
+  const preview = document.createElement('div');
+  preview.id = 'n3-image-preview';
+  preview.setAttribute('popover', 'auto');
+  preview.setAttribute('role', 'dialog');
+  preview.setAttribute('aria-label', 'Ảnh xem trước');
+  const previewImage = document.createElement('img');
+  previewImage.alt = 'Ảnh phóng lớn';
+  previewImage.title = 'Nhấp để thu nhỏ';
+  const expand = document.createElement('button');
+  expand.type = 'button';
+  expand.textContent = '⛶ Toàn màn hình';
+  expand.setAttribute('aria-label', 'Mở ảnh toàn màn hình');
+  preview.append(previewImage, expand);
+
+  const full = document.createElement('dialog');
+  full.id = 'n3-image-fullscreen';
+  full.setAttribute('aria-label', 'Ảnh toàn màn hình');
+  const fullImage = document.createElement('img');
+  fullImage.alt = 'Ảnh toàn màn hình';
+  const close = document.createElement('button');
+  close.type = 'button';
+  close.textContent = '✕ Đóng · Esc';
+  close.setAttribute('aria-label', 'Đóng ảnh toàn màn hình');
+  full.append(fullImage, close);
+  document.body.append(preview, full);
+
+  let source = null;
+  let usedNativeFullscreen = false;
+  function hidePreview() {
+    if (preview.matches(':popover-open')) preview.hidePopover();
+  }
+  function imageAt(target) {
+    return target instanceof Element && target.matches(selector) ? target : null;
+  }
+  function showPreview(image) {
+    if (!image.isConnected || !image.getClientRects().length || full.open) return;
+    source = image;
+    previewImage.src = image.currentSrc || image.src;
+    const bounds = image.getBoundingClientRect();
+    const main = image.closest('[data-testid="stMain"]')?.getBoundingClientRect();
+    const leftEdge = Math.max(12, (main?.left || 0) + 12);
+    const rightEdge = Math.min(innerWidth, main?.right || innerWidth) - 12;
+    const ratio = (image.naturalWidth || bounds.width) / (image.naturalHeight || bounds.height);
+    const width = Math.min(720, rightEdge - leftEdge, (innerHeight - 24) * ratio, 480 * ratio);
+    const height = width / ratio;
+    preview.style.width = `${width}px`;
+    preview.style.height = `${height}px`;
+    preview.style.left = `${Math.max(leftEdge, Math.min(rightEdge - width, bounds.left + bounds.width / 2 - width / 2))}px`;
+    preview.style.top = `${Math.max(12, Math.min(innerHeight - height - 12, bounds.top + bounds.height / 2 - height / 2))}px`;
+    if (!preview.matches(':popover-open')) preview.showPopover();
+  }
+  async function openFullscreen() {
+    if (!source || full.open) return;
+    fullImage.src = source.currentSrc || source.src;
+    hidePreview();
+    full.showModal();
+    close.focus({ preventScroll: true });
+    // The full-window dialog also works in browsers which disable the Fullscreen API.
+    if (full.requestFullscreen) {
+      try {
+        await full.requestFullscreen();
+        usedNativeFullscreen = document.fullscreenElement === full;
+      } catch (_) { /* Keep the full-window dialog. */ }
+    }
+  }
+  function closeFullscreen() {
+    usedNativeFullscreen = false;
+    if (document.fullscreenElement === full) document.exitFullscreen().catch(() => {});
+    if (!full.open) return;
+    full.close();
+    if (source?.isConnected) source.focus({ preventScroll: true });
+  }
+
+  document.addEventListener('click', event => {
+    const image = imageAt(event.target);
+    if (image) showPreview(image);
+  }, options);
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      hidePreview();
+      if (full.open) { event.preventDefault(); closeFullscreen(); }
+    }
+    const image = imageAt(event.target);
+    if (image && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      showPreview(image);
+      expand.focus({ preventScroll: true });
+    }
+  }, options);
+  previewImage.addEventListener('click', hidePreview, options);
+  expand.addEventListener('click', openFullscreen, options);
+  close.addEventListener('click', closeFullscreen, options);
+  full.addEventListener('cancel', event => { event.preventDefault(); closeFullscreen(); }, options);
+  document.addEventListener('fullscreenchange', () => {
+    if (usedNativeFullscreen && document.fullscreenElement !== full) closeFullscreen();
+  }, options);
+  document.addEventListener('scroll', hidePreview, { ...options, capture: true });
+  window.addEventListener('resize', hidePreview, options);
+
+  function decorateImages() {
+    document.querySelectorAll(selector).forEach(image => {
+      image.tabIndex = 0;
+      image.setAttribute('role', 'button');
+      image.setAttribute('aria-label', 'Nhấp để xem ảnh lớn');
+      image.title = 'Nhấp để xem ảnh lớn';
+    });
+    if (source && (!source.isConnected || !source.getClientRects().length)) {
+      hidePreview();
+      closeFullscreen();
+      source = null;
+    }
+  }
+  const observer = new MutationObserver(decorateImages);
+  observer.observe(document.querySelector('[data-testid="stAppViewContainer"]') || document.body,
+                   { childList: true, subtree: true });
+  decorateImages();
+  window.__n3ImagePreview = {
+    dispose() {
+      observer.disconnect();
+      controller.abort();
+      closeFullscreen();
+      preview.remove();
+      full.remove();
+    }
+  };
+})();
+</script>

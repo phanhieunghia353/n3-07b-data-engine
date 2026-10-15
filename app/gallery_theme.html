@@ -1,0 +1,147 @@
+<style>
+:root {
+  --n3-bg: #101318; --n3-panel: #191e26; --n3-field: #131820;
+  --n3-text: #e8edf5; --n3-muted: #a9b5c6; --n3-line: #343f4e;
+  --n3-accent: #9ac0ff; --n3-on-accent: #102544; --n3-soft: #24354e;
+  --n3-shadow: #0007; --n3-scheme: dark;
+}
+html[data-n3-theme="light"] {
+  --n3-bg: #f4f6fa; --n3-panel: #ffffff; --n3-field: #f7f9fc;
+  --n3-text: #172638; --n3-muted: #526277; --n3-line: #d6dfe9;
+  --n3-accent: #215cc0; --n3-on-accent: #ffffff; --n3-soft: #e7effc;
+  --n3-shadow: #17263826; --n3-scheme: light;
+}
+html[data-n3-theme] { color-scheme: var(--n3-scheme); }
+html[data-n3-theme] body,
+html[data-n3-theme] .stApp,
+html[data-n3-theme] [data-testid="stAppViewContainer"],
+html[data-n3-theme] [data-testid="stMain"] {
+  background: var(--n3-bg); color: var(--n3-text);
+}
+[data-testid="stMainBlockContainer"] { max-width: 1360px; padding: 1.5rem 2.5rem 4rem; }
+[data-testid="stMainBlockContainer"] > [data-testid="stVerticalBlock"] { gap: .75rem; }
+[data-testid="stElementContainer"]:has(> [data-testid="stHtml"] > style),
+[data-testid="stElementContainer"]:has(> [data-testid="stHtml"] > [hidden]) { display: none; }
+/* Hide the native fixed header itself; an invisible header still intercepts clicks. */
+header[data-testid="stHeader"] { display: none !important; }
+html[data-n3-theme] :is(h1,h2,h3,h4,h5,h6,label),
+html[data-n3-theme] [data-testid="stMarkdownContainer"],
+html[data-n3-theme] [data-testid="stWidgetLabel"] { color: var(--n3-text); }
+html[data-n3-theme] [data-testid="stCaptionContainer"] { color: var(--n3-muted); }
+html[data-n3-theme] :is(input,textarea) { color: var(--n3-text) !important; background: var(--n3-field) !important; caret-color: var(--n3-accent); }
+html[data-n3-theme] :is(input,textarea)::placeholder { color: var(--n3-muted); opacity: 1; }
+html[data-n3-theme] [data-testid="stTextInputRootElement"],
+html[data-n3-theme] [data-testid="stTextAreaRootElement"],
+html[data-n3-theme] [data-testid="stNumberInputContainer"],
+html[data-n3-theme] [data-testid="stSelectbox"] [role="group"],
+html[data-n3-theme] [data-testid="stMultiSelect"] [role="group"] {
+  background: var(--n3-field); color: var(--n3-text); border-color: var(--n3-line); border-radius: 8px;
+}
+html[data-n3-theme] :is([data-testid="stSelectbox"],[data-testid="stMultiSelect"]) button,
+html[data-n3-theme] [data-testid="stNumberInputContainer"] button {
+  background: transparent; color: var(--n3-muted);
+}
+html[data-n3-theme] :is([data-testid="stMultiSelectTag"],[data-testid="stMultiSelect"] [data-tag]) {
+  color: var(--n3-text); background: var(--n3-soft); border-color: var(--n3-line);
+}
+html[data-n3-theme] :is([role="listbox"],[role="menu"],[role="tooltip"],[data-testid="stPopoverBody"]) {
+  background: var(--n3-panel); color: var(--n3-text); border-color: var(--n3-line);
+}
+html[data-n3-theme] [role="option"] { color: var(--n3-text); background: var(--n3-panel); }
+html[data-n3-theme] [role="option"]:is(:hover,[data-focused],[aria-selected="true"]) {
+  background: var(--n3-soft); color: var(--n3-text);
+}
+html[data-n3-theme] :is(button[kind="secondary"],button[kind="tertiary"],button[kind="secondaryFormSubmit"]) {
+  color: var(--n3-text); background: var(--n3-panel); border-color: var(--n3-line); border-radius: 8px;
+}
+html[data-n3-theme] button[kind="primary"] {
+  color: var(--n3-on-accent); background: var(--n3-accent); border-color: var(--n3-accent); border-radius: 8px;
+}
+html[data-n3-theme] button[kind] :is(p,[data-testid="stMarkdownContainer"]) { color: inherit; }
+html[data-n3-theme] button[kind]:not(:disabled):hover { filter: brightness(1.08); border-color: var(--n3-accent); }
+html[data-n3-theme] button:disabled { opacity: .55; }
+html[data-n3-theme] :is(input,textarea):disabled { opacity: .6; }
+html[data-n3-theme] :is(button,input,textarea,summary):focus-visible { outline-color: var(--n3-accent); }
+html[data-n3-theme] [data-testid="stExpander"] details { border-color: var(--n3-line); background: var(--n3-panel); border-radius: 10px; }
+html[data-n3-theme] [data-testid="stExpander"] summary { color: var(--n3-muted); }
+html[data-n3-theme] [data-testid="stExpander"] summary:hover { color: var(--n3-text); background: var(--n3-soft); }
+html[data-n3-theme] [data-testid="stVerticalBlockBorderWrapper"] { border-color: var(--n3-line) !important; }
+html[data-n3-theme] [data-testid="stFileUploaderDropzone"] { color: var(--n3-text); background: var(--n3-field); border: 1px dashed var(--n3-line); }
+html[data-n3-theme] [data-testid="stFileUploaderDropzoneInstructions"] { color: var(--n3-muted); }
+html[data-n3-theme] [data-testid="stAlert"] { background: var(--n3-soft); color: var(--n3-text); border-color: var(--n3-line); }
+html[data-n3-theme] [data-testid="stMetric"] { color: var(--n3-text); }
+html[data-n3-theme] [role="tablist"] { gap: 10px; border-color: var(--n3-line); margin-top: .25rem; }
+html[data-n3-theme] [role="tab"] { color: var(--n3-muted); padding: 10px 12px; }
+html[data-n3-theme] [role="tab"][aria-selected="true"] { color: var(--n3-accent); }
+html[data-n3-theme] [role="tab"] :is(p,[data-testid="stMarkdownContainer"]) { color: inherit; }
+html[data-n3-theme] [data-baseweb="tab-highlight"] { background: var(--n3-accent); }
+html[data-n3-theme] [role="tab"] .react-aria-SelectionIndicator { background: var(--n3-accent) !important; }
+html[data-n3-theme] [data-testid="stProgressBar"] [role="progressbar"] > div { background-color: var(--n3-accent); }
+html[data-n3-theme] [role="tabpanel"] { padding-top: 8px; }
+.n3-header { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; padding: 0 0 14px; border-bottom: 1px solid var(--n3-line); }
+.n3-brand { display: flex; align-items: center; gap: 13px; }
+.n3-logo { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 12px; background: var(--n3-accent); color: var(--n3-on-accent); font: 600 16px system-ui,sans-serif; }
+.n3-header h1 { margin: 0; padding: 0; font: 600 22px/1.3 system-ui,sans-serif; letter-spacing: .01em; }
+.n3-header p { margin: 4px 0 0; color: var(--n3-muted); font: 400 13px/1.5 system-ui,sans-serif; }
+#n3-theme-toggle { display: inline-flex; align-items: center; justify-content: center; padding: 9px 14px; min-height: 40px; border: 1px solid var(--n3-line); border-radius: 9px; background: var(--n3-panel); color: var(--n3-text); font: 500 13px system-ui,sans-serif; cursor: pointer; }
+#n3-theme-toggle:hover { border-color: var(--n3-accent); }
+#n3-theme-toggle:focus-visible { outline: 3px solid var(--n3-accent); outline-offset: 3px; }
+.st-key-gallery_filters { padding-top: 0; }
+[class*="st-key-query_"] { padding: 12px !important; background: var(--n3-panel); border-color: var(--n3-line) !important; border-radius: 12px !important; }
+[class*="st-key-query_"] [data-testid="stTextAreaRootElement"] { border-color: transparent !important; }
+[class*="st-key-result_toolbar_"] { margin: 0; }
+[class*="st-key-result_toolbar_"] [data-testid="stVerticalBlock"] { gap: .15rem; }
+[class*="st-key-gallery_card_"] { padding: 10px; background: var(--n3-panel); border: 1px solid var(--n3-line); border-radius: 12px; height: 100%; }
+[class*="st-key-gallery_card_"] > [data-testid="stVerticalBlock"] { gap: .6rem; }
+[class*="st-key-gallery_card_"] [data-testid="stImage"] { width: 100%; }
+[class*="st-key-gallery_card_"] [data-testid="stImage"] img { width: 100%; aspect-ratio: 16 / 9; object-fit: contain; background: #0a0c10; border-radius: 7px; }
+[class*="st-key-gallery_card_"] [data-testid="stExpander"] details { border: 0; background: transparent; }
+[class*="st-key-gallery_card_"] [data-testid="stExpander"] summary { padding: 3px 0; font-size: 12px; }
+[class*="st-key-gallery_card_"] button[kind="secondary"] { min-height: 34px; font-size: 13px; }
+.n3-card-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; color: var(--n3-muted); font: 400 12px/1.5 system-ui,sans-serif; }
+.n3-card-meta span { padding: 3px 7px; border-radius: 5px; background: var(--n3-field); }
+.n3-card-meta .n3-rank { color: var(--n3-text); font-weight: 500; padding-left: 0; background: transparent; margin-right: 2px; }
+.n3-empty { padding: 48px 18px; text-align: center; color: var(--n3-muted); font: 400 14px/1.5 system-ui,sans-serif; }
+@media (max-width: 700px) {
+  [data-testid="stMainBlockContainer"] { padding: 1.5rem 1rem 3rem; }
+  .n3-header { padding-bottom: 16px; }
+  .n3-header h1 { font-size: 20px; }
+  .n3-header p { max-width: 230px; }
+  [class*="st-key-query_"] { padding: 12px !important; }
+  html[data-n3-theme] [role="tab"] { padding-inline: 4px; }
+}
+</style>
+<script>
+(() => {
+  // A browser preference only: switching appearance never reruns or mutates the study.
+  if (window.__n3GalleryTheme) { window.__n3GalleryTheme.sync(); return; }
+  const storageKey = 'n3-gallery-theme';
+  let saved;
+  try { saved = localStorage.getItem(storageKey); } catch (_) { /* Storage may be disabled. */ }
+  let theme = saved === 'light' || saved === 'dark' ? saved
+    : matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  function sync() {
+    const label = theme === 'dark' ? '☀ Giao diện sáng' : '☾ Giao diện tối';
+    document.querySelectorAll('#n3-theme-toggle').forEach(button => {
+      if (button.textContent !== label) button.textContent = label;
+      button.setAttribute('aria-label', theme === 'dark' ? 'Chuyển sang giao diện sáng' : 'Chuyển sang giao diện tối');
+      button.setAttribute('aria-pressed', String(theme === 'dark'));
+    });
+  }
+  function apply() {
+    document.documentElement.dataset.n3Theme = theme;
+    sync();
+  }
+  apply();
+  document.addEventListener('click', event => {
+    if (!(event.target instanceof Element) || !event.target.closest('#n3-theme-toggle')) return;
+    theme = theme === 'dark' ? 'light' : 'dark';
+    try { localStorage.setItem(storageKey, theme); } catch (_) { /* Keep this page usable. */ }
+    apply();
+  });
+  const observer = new MutationObserver(sync);
+  observer.observe(document.querySelector('[data-testid="stAppViewContainer"]') || document.body,
+                   { childList: true, subtree: true });
+  window.__n3GalleryTheme = { sync, observer };
+})();
+</script>

@@ -1,0 +1,21 @@
+# CLIP_MODEL. Encoder only, never trained. Verify names with open_clip.list_pretrained().
+# Image and text vectors must come from the same (open_clip_name, pretrained).
+models:
+  b32:
+    open_clip_name: ViT-B-32
+    pretrained: laion2b_s34b_b79k
+    embed_dim: 512
+    input_res: 224
+    role: dev
+  siglip384:
+    open_clip_name: ViT-B-16-SigLIP-384
+    pretrained: webli
+    embed_dim: 768
+    input_res: 384
+    role: candidate
+  so400m:
+    open_clip_name: ViT-SO400M-14-SigLIP-384
+    pretrained: webli
+    embed_dim: 1152
+    input_res: 384
+    role: candidate
